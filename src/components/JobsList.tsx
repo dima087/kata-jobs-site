@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { Stack, Pagination, Text, Loader, Group } from '@mantine/core';
+import { Stack, Pagination, Loader, Group, Text, Alert } from '@mantine/core';
+import { IconAlertCircle } from '@tabler/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchJobs, setPage } from '../store/slices/jobsSlice';
 import { JobCard } from './JobCard';
@@ -11,16 +12,16 @@ export function JobsList() {
         (state: RootState) => state.jobs
     );
 
-    const totalPages = Math.ceil(total / 10);
+    const totalPages = Math.max(1, Math.ceil(total / 10));
 
     useEffect(() => {
         dispatch(
             fetchJobs({
                 page,
                 limit: 10,
-                search,
-                city,
-                skills,
+                search: search || undefined,
+                city: city === 'Все города' ? undefined : city,
+                skills: skills.length > 0 ? skills : undefined,
             })
         );
     }, [dispatch, page, search, city, skills]);
@@ -28,32 +29,52 @@ export function JobsList() {
     if (loading) {
         return (
             <Stack align="center" justify="center" style={{ minHeight: 400 }}>
-                <Loader />
+                <Loader size="lg" />
+                <Text mt="md" c="dimmed">Загрузка вакансий...</Text>
             </Stack>
         );
     }
 
     if (error) {
-        return <Text c="red">Ошибка: {error}</Text>;
+        return (
+            <Stack align="center" justify="center" style={{ minHeight: 400 }}>
+                <Alert
+                    icon={<IconAlertCircle size={16} />}
+                    title="Ошибка загрузки"
+                    color="red"
+                    variant="light"
+                >
+                    {error}
+                </Alert>
+                <Text c="dimmed" size="sm" mt="md">Проверьте подключение к интернету</Text>
+            </Stack>
+        );
+    }
+
+    if (jobs.length === 0) {
+        return (
+            <Stack align="center" justify="center" style={{ minHeight: 400 }}>
+                <Text c="dimmed" fz="lg">Вакансии не найдены</Text>
+                <Text c="dimmed" size="sm">Попробуйте изменить параметры поиска</Text>
+            </Stack>
+        );
     }
 
     return (
         <Stack>
-            <Text fz="xl" fw={600} mb="md">
-                Список вакансий по профессии Frontend-разработчик
-            </Text>
-
             {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
             ))}
 
-            <Group justify="center" mt="md">
-                <Pagination
-                    value={page}
-                    onChange={(value) => dispatch(setPage(value))}
-                    total={totalPages}
-                />
-            </Group>
+            {totalPages > 1 && (
+                <Group justify="center" mt="md">
+                    <Pagination
+                        value={page}
+                        onChange={(value) => dispatch(setPage(value))}
+                        total={totalPages}
+                    />
+                </Group>
+            )}
         </Stack>
     );
 }

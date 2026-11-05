@@ -12,28 +12,64 @@ interface FetchJobsParams {
     skills?: string[];
 }
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+const fetchWithRetry = async (url: string, maxRetries = 3, retryDelay = 2000) => {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            console.log(`🔄 Попытка ${attempt + 1} из ${maxRetries}`);
+            const response = await axios.get(url, {
+                timeout: 30000,
+                headers: { 'Accept': 'application/json' }
+            });
+            return response.data;
+        } catch (error: any) {
+            console.warn(`⚠️ Попытка ${attempt + 1} не удалась:`, error.message);
+            if (attempt === maxRetries - 1) {
+                throw error;
+            }
+            await delay(retryDelay);
+        }
+    }
+};
+
 export const fetchJobs = createAsyncThunk(
     'jobs/fetchJobs',
-    async (params: FetchJobsParams) => {
-        const searchParams = new URLSearchParams({
-            page: params.page.toString(),
-            limit: params.limit.toString(),
-        });
+    async (params: FetchJobsParams, { rejectWithValue }) => {
+        try {
+            const searchParams = new URLSearchParams({
+                page: params.page.toString(),
+                limit: params.limit.toString(),
+            });
 
-        if (params.search) {
-            searchParams.append('search', params.search);
+            if (params.search) {
+                searchParams.append('search', params.search);
+            }
+
+            if (params.city && params.city !== 'Все города') {
+                searchParams.append('city', params.city);
+            }
+
+            if (params.skills && params.skills.length > 0) {
+                searchParams.append('skills', params.skills.join(','));
+            }
+
+            const url = `${API_URL}?${searchParams.toString()}`;
+            console.log('🔗 Запрос к API:', url);
+
+            const data = await fetchWithRetry(url);
+            console.log('✅ Ответ API:', data);
+
+            return data;
+        } catch (error: any) {
+            console.error(' Ошибка API после всех попыток:', error);
+
+            if (error.code === 'ECONNABORTED') {
+                return rejectWithValue('Сервер не отвечает. Попробуйте обновить страницу через минуту.');
+            }
+
+            return rejectWithValue(error.message || 'Ошибка загрузки данных');
         }
-
-        if (params.city && params.city !== 'Все') {
-            searchParams.append('city', params.city);
-        }
-
-        if (params.skills && params.skills.length > 0) {
-            searchParams.append('skills', params.skills.join(','));
-        }
-
-        const response = await axios.get(`${API_URL}?${searchParams}`);
-        return response.data;
     }
 );
 
@@ -44,8 +80,8 @@ const initialState: JobsState = {
     loading: false,
     error: null,
     search: '',
-    city: 'Все',
-    skills: ['JavaScript', 'React', 'Redux', 'Python'],
+    city: 'Все города',
+    skills: ['JavaScript', 'React', 'Redux', 'ReduxToolkit', 'Nextjs'],
 };
 
 const jobsSlice = createSlice({
@@ -82,12 +118,27 @@ const jobsSlice = createSlice({
             })
             .addCase(fetchJobs.fulfilled, (state, action) => {
                 state.loading = false;
-                state.jobs = action.payload.jobs || [];
-                state.total = action.payload.total || 0;
+                const data = action.payload;
+
+                console.log('📦 Структура ответа:', data);
+
+                // API возвращает { jobs: [], pagination: {...}, success: true }
+                if (data && data.jobs && Array.isArray(data.jobs)) {
+                    state.jobs = data.jobs;
+                    state.total = data.pagination?.totalItems || data.jobs.length;
+                } else if (Array.isArray(data)) {
+                    state.jobs = data;
+                    state.total = data.length;
+                } else {
+                    console.warn('⚠️ Неизвестный формат ответа:', data);
+                    state.jobs = [];
+                    state.total = 0;
+                }
             })
             .addCase(fetchJobs.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message || 'Ошибка загрузки';
+                state.error = action.payload as string || 'Ошибка загрузки';
+                console.error('❌ Ошибка в reducer:', action.payload);
             });
     },
 });

@@ -1,19 +1,29 @@
 export interface Job {
-    id: string;
-    title: string;
-    salary: number;
-    experience: string;
-    workFormat: 'remote' | 'office' | 'hybrid';
-    company: string;
+    id: number;
+    name: string;
+    company_name: string;
     city: string;
-    skills: string[];
+    salary: string;
+    experience?: string;
+    workFormat?: string;
+    work_format?: string;
+    skills?: string[];
+    description?: string;
+    about_company?: string;
+}
+
+export interface Pagination {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
 }
 
 export interface JobsResponse {
     jobs: Job[];
-    total: number;
-    page: number;
-    limit: number;
+    pagination: Pagination;
+    success: boolean;
 }
 
 export interface JobsState {
