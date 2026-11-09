@@ -1,18 +1,16 @@
 import { Routes, Route } from "react-router-dom";
 import { Vacancy } from '../pages/Vacancy';
-import {MainContainer} from "../pages/MainContainer.tsx";
+import { MainContainer } from "../pages/MainContainer.tsx";
+import { NotFound } from "../pages/NotFound.tsx";
 
 export const AppRoutes = () => {
-    const navigationRouter = [
-        {path: "/vacancy/:id", element: <Vacancy />},
-        {path: "/", element: <MainContainer />},
-    ]
-
     return (
         <Routes>
-            { navigationRouter.map((route) => (
-                <Route key={route.path} path={route.path} element={ route.element } />
-            ))}
+            <Route path="/vacancy/:id" element={<Vacancy />} />
+            <Route path="/" element={<MainContainer />} />
+            <Route path="/vacancies/moscow" element={<MainContainer />} />
+            <Route path="/vacancies/petersburg" element={<MainContainer />} />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     )
 };

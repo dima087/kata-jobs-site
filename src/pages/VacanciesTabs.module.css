@@ -1,0 +1,43 @@
+.headerSection {
+    background-color: #f8f9fa;
+    padding: 32px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    color: #868e96;
+    font-size: 18px;
+}
+
+.searchInput {
+    width: 320px;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.searchButton {
+    padding: 8px 16px;
+    background-color: #4263EB;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.searchButton:hover {
+    background-color: #364fc7;
+}
+
+.tabs {
+    margin-top: 24px;
+}

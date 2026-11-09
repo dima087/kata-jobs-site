@@ -13,8 +13,13 @@ import { IconPlus, IconMapPin } from '@tabler/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCity, addSkill, removeSkill } from '../store/slices/jobsSlice';
 import type { RootState, AppDispatch } from '../store/store';
+import classes from './Filters.module.css';
 
-export function Filters() {
+interface FiltersProps {
+    hideCitySelect?: boolean;
+}
+
+export function Filters({ hideCitySelect = false }: FiltersProps) {
     const dispatch = useDispatch<AppDispatch>();
     const { city, skills } = useSelector((state: RootState) => state.jobs);
     const [newSkill, setNewSkill] = useState('');
@@ -44,7 +49,7 @@ export function Filters() {
                         value={newSkill}
                         onChange={(e) => setNewSkill(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        style={{ flex: 1 }}
+                        className={classes.skillInput}
                         size="lg"
                     />
                     <Button
@@ -52,15 +57,7 @@ export function Filters() {
                         variant="filled"
                         color="#A5D8FF"
                         size="lg"
-                        style={{
-                            borderRadius: 12,
-                            width: 56,
-                            height: 46,
-                            padding: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
+                        className={classes.addButton}
                     >
                         <IconPlus size={24} color="white" />
                     </Button>
@@ -80,16 +77,18 @@ export function Filters() {
                 </Group>
             </Paper>
 
-            <Paper p="md" withBorder radius="md">
-                <Select
-                    value={city}
-                    onChange={(value) => value && dispatch(setCity(value))}
-                    data={['Все города', 'Москва', 'Санкт-Петербург']}
-                    placeholder="Все города"
-                    leftSection={<IconMapPin size={18} color="#868e96" />}
-                    size="md"
-                />
-            </Paper>
+            {!hideCitySelect && (
+                <Paper p="md" withBorder radius="md">
+                    <Select
+                        value={city}
+                        onChange={(value) => value && dispatch(setCity(value))}
+                        data={['Все города', 'Москва', 'Санкт-Петербург']}
+                        placeholder="Все города"
+                        leftSection={<IconMapPin size={18} color="#868e96" />}
+                        size="md"
+                    />
+                </Paper>
+            )}
         </Box>
     );
 }

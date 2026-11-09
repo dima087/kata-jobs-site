@@ -1,0 +1,14 @@
+.heroSection {
+    background-color: #f8f9fa;
+    padding-top: 32px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.searchInput {
+    width: 320px;
+}
+
+.tabsWrapper {
+    margin-top: 24px;
+    margin-left: 379px;
+}

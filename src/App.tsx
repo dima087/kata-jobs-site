@@ -1,15 +1,17 @@
-import { Container, Title, Text, TextInput, Button, Group } from '@mantine/core';
+import { Container, Title, Text, TextInput, Button, Group, Tabs } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { AppRoutes } from "./routes/routes.tsx";
 import { useDispatch, useSelector } from 'react-redux';
-import { setSearch } from './store/slices/jobsSlice';
+import { setSearch, setCity } from './store/slices/jobsSlice';
 import type { RootState, AppDispatch } from './store/store';
+import classes from './App.module.css';
 
 function App() {
     const location = useLocation();
+    const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const { search } = useSelector((state: RootState) => state.jobs);
     const [searchInput, setSearchInput] = useState(search);
@@ -25,15 +27,30 @@ function App() {
     };
 
     const isHomePage = location.pathname === '/';
+    const isMoscowPage = location.pathname === '/vacancies/moscow';
+    const isPetersburgPage = location.pathname === '/vacancies/petersburg';
+    const isVacanciesPage = isHomePage || isMoscowPage || isPetersburgPage;
+
+    const activeTab = isPetersburgPage ? 'petersburg' : isMoscowPage ? 'moscow' : null;
+
+    const handleTabChange = (value: string | null) => {
+        if (value === 'moscow') {
+            dispatch(setCity('Москва'));
+            navigate('/vacancies/moscow');
+        } else if (value === 'petersburg') {
+            dispatch(setCity('Санкт-Петербург'));
+            navigate('/vacancies/petersburg');
+        }
+    };
 
     return (
         <>
             <Header />
 
-            {isHomePage && (
-                <div style={{ backgroundColor: '#f8f9fa', padding: '32px 0', borderBottom: '1px solid #e9ecef' }}>
+            {isVacanciesPage && (
+                <div className={classes.heroSection}>
                     <Container size="lg">
-                        <Group justify="space-between" align="flex-start">
+                        <Group justify="space-between" align="flex-start" mb="xl">
                             <div>
                                 <Title order={2} fw={700} mb={4}>
                                     Список вакансий
@@ -49,7 +66,7 @@ function App() {
                                     onChange={(e) => setSearchInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     leftSection={<IconSearch size={16} />}
-                                    style={{ width: 320 }}
+                                    className={classes.searchInput}
                                 />
                                 <Button
                                     onClick={handleSearch}
@@ -60,6 +77,18 @@ function App() {
                                 </Button>
                             </Group>
                         </Group>
+
+                        <div className={classes.tabsWrapper}>
+                            <Tabs
+                                value={activeTab}
+                                onChange={handleTabChange}
+                            >
+                                <Tabs.List>
+                                    <Tabs.Tab value="moscow">Москва</Tabs.Tab>
+                                    <Tabs.Tab value="petersburg">Санкт-Петербург</Tabs.Tab>
+                                </Tabs.List>
+                            </Tabs>
+                        </div>
                     </Container>
                 </div>
             )}

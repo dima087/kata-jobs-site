@@ -1,0 +1,35 @@
+.header {
+    background-color: white;
+    border-bottom: 1px solid #e9ecef;
+    padding: 12px 0;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ff4d4f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #4263EB;
+}
+
+.anchorWithIcon {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.spacer {
+    width: 100px;
+}
