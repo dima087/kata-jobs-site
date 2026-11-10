@@ -26,10 +26,11 @@ function App() {
         }
     };
 
-    const isHomePage = location.pathname === '/';
+    const isVacanciesPage = location.pathname === '/vacancies' ||
+        location.pathname === '/vacancies/moscow' ||
+        location.pathname === '/vacancies/petersburg';
     const isMoscowPage = location.pathname === '/vacancies/moscow';
     const isPetersburgPage = location.pathname === '/vacancies/petersburg';
-    const isVacanciesPage = isHomePage || isMoscowPage || isPetersburgPage;
 
     const activeTab = isPetersburgPage ? 'petersburg' : isMoscowPage ? 'moscow' : null;
 
@@ -50,7 +51,7 @@ function App() {
             {isVacanciesPage && (
                 <div className={classes.heroSection}>
                     <Container size="lg">
-                        <Group justify="space-between" align="flex-start" mb="xl">
+                        <Group justify="space-between" align="flex-start" mb="md">
                             <div>
                                 <Title order={2} fw={700} mb={4}>
                                     Список вакансий

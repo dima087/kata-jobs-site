@@ -1,5 +1,6 @@
-import { Container, Group, Text, Anchor } from '@mantine/core';
+import { Container, Group, Text, } from '@mantine/core';
 import { IconUserCircle } from '@tabler/icons-react';
+import { NavLink } from 'react-router-dom';
 import classes from './Header.module.css';
 
 export function Header() {
@@ -17,16 +18,27 @@ export function Header() {
                     </Group>
 
                     <Group gap="lg">
-                        <Group gap="xs">
-                            <Anchor href="#" c="dark" fw={500}>
-                                Вакансии FE
-                            </Anchor>
-                            <div className={classes.dot} />
-                        </Group>
-                        <Anchor href="#" c="gray.6" className={classes.anchorWithIcon}>
-                            <IconUserCircle size={18} />
-                            Обо мне
-                        </Anchor>
+                        <NavLink
+                            to="/vacancies"
+                            className={({ isActive }) =>
+                                isActive ? classes.activeLink : classes.link
+                            }
+                            end
+                        >
+                            Вакансии FE
+                        </NavLink>
+                        <div className={classes.dot} />
+                        <NavLink
+                            to="/about"
+                            className={({ isActive }) =>
+                                isActive ? classes.activeLink : classes.link
+                            }
+                        >
+                            <Group gap="xs" align="center">
+                                <IconUserCircle size={18} />
+                                <span>Обо мне</span>
+                            </Group>
+                        </NavLink>
                     </Group>
 
                     <div className={classes.spacer} />

@@ -17,14 +17,12 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const fetchWithRetry = async (url: string, maxRetries = 3, retryDelay = 2000) => {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
-            console.log(`🔄 Попытка ${attempt + 1} из ${maxRetries}`);
             const response = await axios.get(url, {
                 timeout: 30000,
                 headers: { 'Accept': 'application/json' }
             });
             return response.data;
         } catch (error: any) {
-            console.warn(`⚠️ Попытка ${attempt + 1} не удалась:`, error.message);
             if (attempt === maxRetries - 1) {
                 throw error;
             }
@@ -55,19 +53,12 @@ export const fetchJobs = createAsyncThunk(
             }
 
             const url = `${API_URL}?${searchParams.toString()}`;
-            console.log('🔗 Запрос к API:', url);
-
             const data = await fetchWithRetry(url);
-            console.log('✅ Ответ API:', data);
-
             return data;
         } catch (error: any) {
-            console.error(' Ошибка API после всех попыток:', error);
-
             if (error.code === 'ECONNABORTED') {
                 return rejectWithValue('Сервер не отвечает. Попробуйте обновить страницу через минуту.');
             }
-
             return rejectWithValue(error.message || 'Ошибка загрузки данных');
         }
     }
@@ -96,6 +87,10 @@ const jobsSlice = createSlice({
             state.city = action.payload;
             state.page = 1;
         },
+        setSkills: (state, action: PayloadAction<string[]>) => {
+            state.skills = action.payload;
+            state.page = 1;
+        },
         addSkill: (state, action: PayloadAction<string>) => {
             if (!state.skills.includes(action.payload)) {
                 state.skills.push(action.payload);
@@ -120,9 +115,6 @@ const jobsSlice = createSlice({
                 state.loading = false;
                 const data = action.payload;
 
-                console.log('📦 Структура ответа:', data);
-
-                // API возвращает { jobs: [], pagination: {...}, success: true }
                 if (data && data.jobs && Array.isArray(data.jobs)) {
                     state.jobs = data.jobs;
                     state.total = data.pagination?.totalItems || data.jobs.length;
@@ -130,7 +122,6 @@ const jobsSlice = createSlice({
                     state.jobs = data;
                     state.total = data.length;
                 } else {
-                    console.warn('⚠️ Неизвестный формат ответа:', data);
                     state.jobs = [];
                     state.total = 0;
                 }
@@ -138,10 +129,9 @@ const jobsSlice = createSlice({
             .addCase(fetchJobs.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string || 'Ошибка загрузки';
-                console.error('❌ Ошибка в reducer:', action.payload);
             });
     },
 });
 
-export const { setSearch, setCity, addSkill, removeSkill, setPage } = jobsSlice.actions;
+export const { setSearch, setCity, setSkills, addSkill, removeSkill, setPage } = jobsSlice.actions;
 export default jobsSlice.reducer;

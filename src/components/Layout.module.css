@@ -1,0 +1,48 @@
+.header {
+    background-color: white;
+    border-bottom: 1px solid #e9ecef;
+    padding: 12px 0;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ff4d4f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.link {
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.link:hover {
+    color: #4263EB;
+}
+
+.activeLink {
+    color: #4263EB;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #4263EB;
+}
+
+.spacer {
+    width: 100px;
+}

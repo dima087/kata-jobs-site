@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { useSearchParams, useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Container, Grid, Tabs } from '@mantine/core';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { Container, Grid, Tabs, Group } from '@mantine/core';
 import { Filters } from '../components/Filters';
 import { JobsList } from '../components/JobsList';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSearch, setCity, addSkill, removeSkill } from '../store/slices/jobsSlice';
+import { setSearch, setCity, addSkill } from '../store/slices/jobsSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import classes from './VacanciesTabs.module.css';
 
@@ -18,7 +18,6 @@ export const VacanciesTabs = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const { city: cityParam } = useParams<{ city: string }>();
     const navigate = useNavigate();
-    const location = useLocation();
     const { city, skills, search } = useSelector((state: RootState) => state.jobs);
 
     // Определяем текущий город из URL
